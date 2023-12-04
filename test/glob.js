@@ -16,36 +16,42 @@ test("single", async () => {
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./file.js",
-          "./*.js": "./folder/*.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./file.js",
+						"./*.js": "./folder/*.js",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./file.js"},
-      {name: "./file.js", path: "./folder/file.js"},
-      {name: "./other.js", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./file.js"},
+      {name: "./file.js", registeredExport: './*.js', path: "./folder/file.js"},
+      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./file.js",
-          "./*": "./folder/*.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./file.js",
+						"./*": "./folder/*.js",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./file.js"},
-      {name: "./file", path: "./folder/file.js"},
-      {name: "./other", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./file.js"},
+      {name: "./file", registeredExport: './*', path: "./folder/file.js"},
+      {name: "./other", registeredExport: './*', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 });
@@ -54,18 +60,21 @@ test("slash fallback", async () => {
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./file.js",
-          "./": "./folder/*.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./file.js",
+						"./": "./folder/",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./file.js"},
-      {name: "./file", path: "./folder/file.js"},
-      {name: "./other", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./file.js"},
+      {name: "./file.js", registeredExport: './', path: "./folder/file.js"},
+      {name: "./other.js", registeredExport: './', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 });
@@ -74,21 +83,24 @@ test("multiple", async () => {
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./file.js",
-          "./*.js": "./folder/*.js",
-          "./*": "./folder/*.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./file.js",
+						"./*.js": "./folder/*.js",
+						"./*": "./folder/*.js",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./file.js"},
-      {name: "./file", path: "./folder/file.js"},
-      {name: "./file.js", path: "./folder/file.js"},
-      {name: "./other", path: "./folder/other.js"},
-      {name: "./other.js", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./file.js"},
+      {name: "./file", registeredExport: './*', path: "./folder/file.js"},
+      {name: "./file.js", registeredExport: './*.js', path: "./folder/file.js"},
+      {name: "./other", registeredExport: './*', path: "./folder/other.js"},
+      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 });
@@ -97,57 +109,66 @@ test("overrides", async () => {
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./source.js",
-          "./file.js": "./file.js",
-          "./*.js": "./folder/*.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./source.js",
+						"./file.js": "./file.js",
+						"./*.js": "./folder/*.js",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./source.js"},
-      {name: "./file.js", path: "./file.js"},
-      {name: "./other.js", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./source.js"},
+      {name: "./file.js", registeredExport: './file.js', path: "./file.js"},
+      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./source.js",
-          "./*e.js": "./internal/*e.js",
-          "./*.js": "./folder/*.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./source.js",
+						"./*e.js": "./internal/*e.js",
+						"./*.js": "./folder/*.js",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./source.js"},
-      {name: "./file.js", path: "./internal/file.js"},
-      {name: "./other.js", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./source.js"},
+      {name: "./file.js", registeredExport: './*e.js', path: "./internal/file.js"},
+      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 
   assert.equal(
     sortByName(
       await listExports(fixture, {
-        exports: {
-          ".": "./source.js",
-          "./*.js": "./folder/*.js",
-          "./*e.js": "./internal/*e.js",
-          "./package.json": "./package.json",
-        },
+				packageJson: {
+
+					exports: {
+						".": "./source.js",
+						"./*.js": "./folder/*.js",
+						"./*e.js": "./internal/*e.js",
+						"./package.json": "./package.json",
+					},
+				}
       }),
     ),
     [
-      {name: ".", path: "./source.js"},
-      {name: "./file.js", path: "./internal/file.js"},
-      {name: "./other.js", path: "./folder/other.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./source.js"},
+      {name: "./file.js", registeredExport: './*e.js', path: "./internal/file.js"},
+      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 });

@@ -2,7 +2,6 @@
 
 /**
  * @param {string} location
- * @param {any} packageJson
  * @param {import('./index.js').ExportInput} [input]
  * @returns {Promise<Array<import('./index.js').Export>>}
  */

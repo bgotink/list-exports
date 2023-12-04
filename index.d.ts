@@ -7,6 +7,7 @@ export interface ExportInput {
 
 export interface Export {
   name: string;
+	registeredExport: string;
   path: string;
 }
 

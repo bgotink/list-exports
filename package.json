@@ -1,6 +1,6 @@
 {
   "name": "@bgotink/list-exports",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "author": "Bram Gotink <bram@gotink.me>",
@@ -8,7 +8,13 @@
     "type": "git",
     "url": "https://github.com/bgotink/list-exports.git"
   },
-  "files": ["README.md", "LICENSE.md", "index.js", "index.cjs", "index.d.ts"],
+  "files": [
+    "README.md",
+    "LICENSE.md",
+    "index.js",
+    "index.cjs",
+    "index.d.ts"
+  ],
   "scripts": {
     "test": "uvu test --ignore fixture"
   },

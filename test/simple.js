@@ -11,7 +11,10 @@ const fixture = fileURLToPath(
 test("null", async () => {
   assert.equal(
     await listExports(fixture, {
-      exports: null,
+			packageJson: {
+
+				exports: null,
+			}
     }),
     [],
   );
@@ -20,56 +23,71 @@ test("null", async () => {
 test("string", async () => {
   assert.equal(
     await listExports(fixture, {
-      exports: "./file.js",
+			packageJson: {
+
+				exports: "./file.js",
+			}
     }),
-    [{name: ".", path: "./file.js"}],
+    [{name: ".", registeredExport: '.', path: "./file.js"}],
   );
 });
 
 test("condition object", async () => {
   assert.equal(
     await listExports(fixture, {
-      exports: {
-        default: "./file.js",
-      },
+			packageJson: {
+
+				exports: {
+					default: "./file.js",
+				},
+			}
     }),
-    [{name: ".", path: "./file.js"}],
+    [{name: ".", registeredExport: '.', path: "./file.js"}],
   );
 
   assert.equal(
     await listExports(fixture, {
-      exports: {
-        node: "./source.js",
-        default: "./file.js",
-      },
+			packageJson: {
+
+				exports: {
+					node: "./source.js",
+					default: "./file.js",
+				},
+			}
     }),
-    [{name: ".", path: "./source.js"}],
+    [{name: ".", registeredExport: '.', path: "./source.js"}],
   );
 
   assert.equal(
     await listExports(fixture, {
-      exports: {
-        default: "./file.js",
-        node: "./source.js",
-      },
+			packageJson: {
+
+				exports: {
+					default: "./file.js",
+					node: "./source.js",
+				},
+			}
     }),
-    [{name: ".", path: "./file.js"}],
+    [{name: ".", registeredExport: '.', path: "./file.js"}],
   );
 });
 
 test("path object", async () => {
   assert.equal(
     await listExports(fixture, {
-      exports: {
-        ".": "./file.js",
-        "./file.js": "./source.js",
-        "./package.json": "./package.json",
-      },
+			packageJson: {
+
+				exports: {
+					".": "./file.js",
+					"./file.js": "./source.js",
+					"./package.json": "./package.json",
+				},
+			}
     }),
     [
-      {name: ".", path: "./file.js"},
-      {name: "./file.js", path: "./source.js"},
-      {name: "./package.json", path: "./package.json"},
+      {name: ".", registeredExport: '.', path: "./file.js"},
+      {name: "./file.js", registeredExport: './file.js', path: "./source.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
     ],
   );
 });

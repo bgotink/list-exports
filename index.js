@@ -7,7 +7,6 @@ import {globStream} from "glob";
 
 /**
  * @param {string} location
- * @param {any} packageJson
  * @param {import('./index.js').ExportInput} [input]
  * @returns {Promise<Array<import('./index.js').Export>>}
  */
@@ -37,12 +36,12 @@ export async function listExports(
     conditions.add(environment);
   }
 
-  const entries = getExportsEntries(packageJson.exports);
+  const entries = getExportsEntries(/** @type {any} */(packageJson).exports);
   if (entries.length === 0) {
     return [];
   }
 
-  if (entries.every(([entry]) => !entry.includes("*"))) {
+  if (entries.every(([,key]) => !key.includes("*"))) {
     return listExportsWithoutPatterns(entries, conditions);
   } else {
     return await listExportsWithPatterns(location, entries, conditions);
@@ -51,7 +50,7 @@ export async function listExports(
 
 /**
  * @param {any} exports
- * @returns {Array<[string, any]>}
+ * @returns {Array<[string, string, any]>}
  */
 function getExportsEntries(exports) {
   if (exports == null) {
@@ -63,7 +62,7 @@ function getExportsEntries(exports) {
     exports === null ||
     Array.isArray(exports)
   ) {
-    return [[".", exports]];
+    return [[".", '.', exports]];
   }
 
   const entries = Object.entries(exports);
@@ -79,14 +78,18 @@ function getExportsEntries(exports) {
   }
 
   if (!startsWithDot) {
-    return [[".", exports]];
+    return [[".", '.', exports]];
   }
 
-  return entries.map(([key, e]) => [key.endsWith("/") ? `${key}*` : key, e]);
+  return entries.map(([key, e]) =>
+		key.endsWith('/') ?
+		[key, `${key}*`, `${e}*`]
+		: [key, key, e]
+	);
 }
 
 /**
- * @param {Array<[string, any]>} exports
+ * @param {Array<[string, string, any]>} exports
  * @param {Set<string>} conditions
  * @returns {Array<import('./index.js').Export>}
  */
@@ -95,16 +98,16 @@ function listExportsWithoutPatterns(exports, conditions) {
   // we don't have to care about checking if a longer export key matches the
   // same export.
 
-  return mapAndFilter(exports, ([key, e]) => {
+  return mapAndFilter(exports, ([registeredExport, name, e]) => {
     const exportedPath = getExportedPath(e, conditions);
 
-    return exportedPath == null ? skip : {name: key, path: exportedPath};
+    return exportedPath == null ? skip : {name, registeredExport, path: exportedPath};
   });
 }
 
 /**
  * @param {string} location
- * @param {Array<[string, any]>} exports
+ * @param {Array<[string, string, any]>} exports
  * @param {Set<string>} conditions
  * @returns {Promise<Array<import('./index.js').Export>>}
  */
@@ -117,41 +120,42 @@ async function listExportsWithPatterns(location, exports, conditions) {
   const fixedKeys = new Set();
   /** @type {Map<string, [number, import('./index.js').Export | null]>} */
   const result = new Map();
-  /** @type {Array<[string, string, string]>} */
+  /** @type {Array<[string, string, string, string]>} */
   const starExports = [];
   /** @type {Array<[string, string, number]>} */
   const starExportsBlocked = [];
-  for (const [key, e] of exports) {
+  for (const [registeredExport, name, e] of exports) {
     const exportedPath = getExportedPath(e, conditions);
-    const starIndex = key.indexOf("*");
+    const starIndex = name.indexOf("*");
 
     if (starIndex !== -1) {
       if (exportedPath != null) {
         starExports.push([
-          key.slice(0, starIndex),
-          key.slice(starIndex + 1),
+					registeredExport,
+          name.slice(0, starIndex),
+          name.slice(starIndex + 1),
           exportedPath,
         ]);
       } else {
         starExportsBlocked.push([
-          key.slice(0, starIndex),
-          key.slice(starIndex + 1),
-          key.length,
+          name.slice(0, starIndex),
+          name.slice(starIndex + 1),
+          name.length,
         ]);
       }
 
       continue;
     }
 
-    fixedKeys.add(key);
-    result.set(key, [
-      key.length,
-      exportedPath != null ? {name: key, path: exportedPath} : null,
+    fixedKeys.add(name);
+    result.set(name, [
+      name.length,
+      exportedPath != null ? {name: name, registeredExport, path: exportedPath} : null,
     ]);
   }
 
   await Promise.all(
-    starExports.map(async ([before, after, exportedPath]) => {
+    starExports.map(async ([registeredExport, before, after, exportedPath]) => {
       const starIndex = exportedPath.indexOf("*");
       if (starIndex === -1) {
         throw new Error(
@@ -179,7 +183,7 @@ async function listExportsWithPatterns(location, exports, conditions) {
       )) {
         const key = `${before}${path.slice(
           exportedBefore.length,
-          -exportedAfter.length,
+          -exportedAfter.length || path.length,
         )}${after}`;
 
         if (fixedKeys.has(key)) {
@@ -195,6 +199,7 @@ async function listExportsWithPatterns(location, exports, conditions) {
             patternLength,
             {
               name: key,
+							registeredExport,
               path,
             },
           ]);
