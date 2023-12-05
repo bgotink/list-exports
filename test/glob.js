@@ -173,4 +173,30 @@ test("overrides", async () => {
   );
 });
 
+test('deep', async () => {
+	assert.equal(
+    sortByName(
+      await listExports(fixture, {
+				packageJson: {
+
+					exports: {
+						".": "./source.js",
+						"./*.js": "./*.js",
+						"./internal/*": null,
+						"./package.json": "./package.json",
+					},
+				}
+      }),
+    ),
+    [
+      {name: ".", registeredExport: '.', path: "./source.js"},
+      {name: "./file.js", registeredExport: './*.js', path: "./file.js"},
+      {name: "./folder/file.js", registeredExport: './*.js', path: "./folder/file.js"},
+      {name: "./folder/other.js", registeredExport: './*.js', path: "./folder/other.js"},
+      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: "./source.js", registeredExport: './*.js', path: "./source.js"},
+    ],
+  );
+})
+
 test.run();

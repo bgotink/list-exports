@@ -168,8 +168,26 @@ async function listExportsWithPatterns(location, exports, conditions) {
 
       const patternLength = before.length + 1 + after.length;
 
+			let patterns;
+			if (exportedBefore.endsWith('/')) {
+				if (exportedAfter.startsWith('/')) {
+					patterns = [`${exportedBefore}**${exportedAfter}`];
+				} else {
+					patterns = [`${exportedBefore}**/*${exportedAfter}`];
+				}
+			} else {
+				if (exportedAfter.startsWith('/')) {
+					patterns = [`${exportedBefore}*/**${exportedAfter}`];
+				} else {
+					patterns = [
+						`${exportedBefore}*${exportedAfter}`,
+						`${exportedBefore}*/**/*${exportedAfter}`,
+					];
+				}
+			}
+
       for await (const path of globStream(
-        `${exportedBefore}**${exportedAfter}`,
+        patterns,
         {
           cwd: dirname(location),
           posix: true,
