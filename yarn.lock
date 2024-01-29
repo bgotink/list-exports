@@ -9,6 +9,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bgotink/list-exports@workspace:."
   dependencies:
+    esbuild-wasm: "npm:^0.20.0"
     glob: "npm:^10.3.10"
     uvu: "npm:^0.5.6"
   languageName: unknown
@@ -140,6 +141,15 @@ __metadata:
   version: 9.2.2
   resolution: "emoji-regex@npm:9.2.2"
   checksum: af014e759a72064cf66e6e694a7fc6b0ed3d8db680427b021a89727689671cefe9d04151b2cad51dbaf85d5ba790d061cd167f1cf32eb7b281f6368b3c181639
+  languageName: node
+  linkType: hard
+
+"esbuild-wasm@npm:^0.20.0":
+  version: 0.20.0
+  resolution: "esbuild-wasm@npm:0.20.0"
+  bin:
+    esbuild: bin/esbuild
+  checksum: 32dd516c971f50c28c9d637a1f4b7060f79922e2899cdcbf7dc77e5e01acaa7f6f11923f9c992bca510a3f0bda5df266e8c92ae3a7c259e156192ab7661e4fca
   languageName: node
   linkType: hard
 

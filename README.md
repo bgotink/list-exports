@@ -17,3 +17,8 @@ export function listExports(
   - `environment` (`node` | `browser` | null, default: `node`) Environment condition to use in resolving
   - `type` (`import` | `require` | `default` | null, default: `import` when the package is imported and `require` when the package is required) Module type condition to load. The `default` condition is added unless the value `null` is passed.
   - `extraCondition` (`string[]`, default: `[]`) Extra conditions to allow
+
+## License & Notice
+
+This package is licensed under the MIT license, which can be found in `LICENSE.md`.
+Dependencies are bundled while publishing, check `NOTICE.md` in the published package for their licenses.

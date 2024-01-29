@@ -1,7 +1,8 @@
 {
   "name": "@bgotink/list-exports",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
+	"private": true,
   "license": "MIT",
   "author": "Bram Gotink <bram@gotink.me>",
   "repository": {
@@ -9,19 +10,23 @@
     "url": "https://github.com/bgotink/list-exports.git"
   },
   "files": [
-    "README.md",
-    "LICENSE.md",
-    "index.js",
+    "*.md",
     "index.cjs",
+    "index.js",
+    "index.d.cts",
     "index.d.ts"
   ],
   "scripts": {
+		"build": "scripts/build.sh",
     "test": "uvu test --ignore fixture"
   },
   "exports": {
     ".": {
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./index.cjs"
+      },
       "types": "./index.d.ts",
-      "require": "./index.cjs",
       "default": "./index.js"
     },
     "./package.json": "./package.json"
@@ -31,6 +36,7 @@
     "glob": "^10.3.10"
   },
   "devDependencies": {
+    "esbuild-wasm": "^0.20.0",
     "uvu": "^0.5.6"
   }
 }
