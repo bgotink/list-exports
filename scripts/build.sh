@@ -20,7 +20,7 @@ cat <<EOF >dist/NOTICE.md
 This package bundles its dependencies before publication. The names and license of these packages are listed below:
 EOF
 
-for pkg in $(jq -r '[.inputs[] | .imports?.[0].original | select(. != null) | select(startswith(".") | not)] | unique[]' node_modules/.cache/meta.json)
+for pkg in $(jq -r '[.inputs[] | .imports?.[] | .original | select(. != null) | select(startswith(".") | not)] | unique[]' node_modules/.cache/meta.json)
 do
 	echo "Bundled dependency $pkg"
 	version=$(jq -r .version node_modules/$pkg/package.json)
