@@ -98,10 +98,10 @@ function listExportsWithoutPatterns(exports, conditions) {
   // we don't have to care about checking if a longer export key matches the
   // same export.
 
-  return mapAndFilter(exports, ([registeredExport, name, e]) => {
+  return mapAndFilter(exports, ([registeredName, name, e]) => {
     const exportedPath = getExportedPath(e, conditions);
 
-    return exportedPath == null ? skip : {name, registeredExport, path: exportedPath};
+    return exportedPath == null ? skip : {name, registeredName, path: exportedPath, registeredPath: exportedPath};
   });
 }
 
@@ -124,17 +124,17 @@ async function listExportsWithPatterns(location, exports, conditions) {
   const starExports = [];
   /** @type {Array<[string, string, number]>} */
   const starExportsBlocked = [];
-  for (const [registeredExport, name, e] of exports) {
-    const exportedPath = getExportedPath(e, conditions);
+  for (const [registeredName, name, e] of exports) {
+    const registeredPath = getExportedPath(e, conditions);
     const starIndex = name.indexOf("*");
 
     if (starIndex !== -1) {
-      if (exportedPath != null) {
+      if (registeredPath != null) {
         starExports.push([
-					registeredExport,
+					registeredName,
           name.slice(0, starIndex),
           name.slice(starIndex + 1),
-          exportedPath,
+          registeredPath,
         ]);
       } else {
         starExportsBlocked.push([
@@ -150,21 +150,21 @@ async function listExportsWithPatterns(location, exports, conditions) {
     fixedKeys.add(name);
     result.set(name, [
       name.length,
-      exportedPath != null ? {name: name, registeredExport, path: exportedPath} : null,
+      registeredPath != null ? {name, registeredName, path: registeredPath, registeredPath} : null,
     ]);
   }
 
   await Promise.all(
-    starExports.map(async ([registeredExport, before, after, exportedPath]) => {
-      const starIndex = exportedPath.indexOf("*");
+    starExports.map(async ([registeredName, before, after, registeredPath]) => {
+      const starIndex = registeredPath.indexOf("*");
       if (starIndex === -1) {
         throw new Error(
           `Malformed exports object, value must contain * if key contains *`,
         );
       }
 
-      const exportedBefore = exportedPath.slice(0, starIndex);
-      const exportedAfter = exportedPath.slice(starIndex + 1);
+      const exportedBefore = registeredPath.slice(0, starIndex);
+      const exportedAfter = registeredPath.slice(starIndex + 1);
 
       const patternLength = before.length + 1 + after.length;
 
@@ -216,8 +216,9 @@ async function listExportsWithPatterns(location, exports, conditions) {
           result.set(key, [
             patternLength,
             {
+							registeredName,
+              registeredPath,
               name: key,
-							registeredExport,
               path,
             },
           ]);

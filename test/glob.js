@@ -17,7 +17,6 @@ test("single", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./file.js",
 						"./*.js": "./folder/*.js",
@@ -27,10 +26,10 @@ test("single", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./file.js"},
-      {name: "./file.js", registeredExport: './*.js', path: "./folder/file.js"},
-      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./file.js", registeredPath: "./file.js"},
+      {name: "./file.js", registeredName: './*.js', path: "./folder/file.js", registeredPath: "./folder/*.js"},
+      {name: "./other.js", registeredName: './*.js', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 
@@ -38,7 +37,6 @@ test("single", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./file.js",
 						"./*": "./folder/*.js",
@@ -48,10 +46,10 @@ test("single", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./file.js"},
-      {name: "./file", registeredExport: './*', path: "./folder/file.js"},
-      {name: "./other", registeredExport: './*', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./file.js", registeredPath: "./file.js"},
+      {name: "./file", registeredName: './*', path: "./folder/file.js", registeredPath: "./folder/*.js"},
+      {name: "./other", registeredName: './*', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 });
@@ -61,7 +59,6 @@ test("slash fallback", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./file.js",
 						"./": "./folder/",
@@ -71,10 +68,10 @@ test("slash fallback", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./file.js"},
-      {name: "./file.js", registeredExport: './', path: "./folder/file.js"},
-      {name: "./other.js", registeredExport: './', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./file.js", registeredPath: "./file.js"},
+      {name: "./file.js", registeredName: './', path: "./folder/file.js", registeredPath: "./folder/*"},
+      {name: "./other.js", registeredName: './', path: "./folder/other.js", registeredPath: "./folder/*"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 });
@@ -84,7 +81,6 @@ test("multiple", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./file.js",
 						"./*.js": "./folder/*.js",
@@ -95,12 +91,12 @@ test("multiple", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./file.js"},
-      {name: "./file", registeredExport: './*', path: "./folder/file.js"},
-      {name: "./file.js", registeredExport: './*.js', path: "./folder/file.js"},
-      {name: "./other", registeredExport: './*', path: "./folder/other.js"},
-      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./file.js", registeredPath: "./file.js"},
+      {name: "./file", registeredName: './*', path: "./folder/file.js", registeredPath: "./folder/*.js"},
+      {name: "./file.js", registeredName: './*.js', path: "./folder/file.js", registeredPath: "./folder/*.js"},
+      {name: "./other", registeredName: './*', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./other.js", registeredName: './*.js', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 });
@@ -110,7 +106,6 @@ test("overrides", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./source.js",
 						"./file.js": "./file.js",
@@ -121,10 +116,10 @@ test("overrides", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./source.js"},
-      {name: "./file.js", registeredExport: './file.js', path: "./file.js"},
-      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./source.js", registeredPath: "./source.js"},
+      {name: "./file.js", registeredName: './file.js', path: "./file.js", registeredPath: "./file.js"},
+      {name: "./other.js", registeredName: './*.js', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 
@@ -132,7 +127,6 @@ test("overrides", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./source.js",
 						"./*e.js": "./internal/*e.js",
@@ -143,10 +137,10 @@ test("overrides", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./source.js"},
-      {name: "./file.js", registeredExport: './*e.js', path: "./internal/file.js"},
-      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./source.js", registeredPath: "./source.js"},
+      {name: "./file.js", registeredName: './*e.js', path: "./internal/file.js", registeredPath: "./internal/*e.js"},
+      {name: "./other.js", registeredName: './*.js', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 
@@ -154,7 +148,6 @@ test("overrides", async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./source.js",
 						"./*.js": "./folder/*.js",
@@ -165,10 +158,10 @@ test("overrides", async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./source.js"},
-      {name: "./file.js", registeredExport: './*e.js', path: "./internal/file.js"},
-      {name: "./other.js", registeredExport: './*.js', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
+      {name: ".", registeredName: '.', path: "./source.js", registeredPath: "./source.js"},
+      {name: "./file.js", registeredName: './*e.js', path: "./internal/file.js", registeredPath: "./internal/*e.js"},
+      {name: "./other.js", registeredName: './*.js', path: "./folder/other.js", registeredPath: "./folder/*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
     ],
   );
 });
@@ -178,7 +171,6 @@ test('deep', async () => {
     sortByName(
       await listExports(fixture, {
 				packageJson: {
-
 					exports: {
 						".": "./source.js",
 						"./*.js": "./*.js",
@@ -189,14 +181,14 @@ test('deep', async () => {
       }),
     ),
     [
-      {name: ".", registeredExport: '.', path: "./source.js"},
-      {name: "./file.js", registeredExport: './*.js', path: "./file.js"},
-      {name: "./folder/file.js", registeredExport: './*.js', path: "./folder/file.js"},
-      {name: "./folder/other.js", registeredExport: './*.js', path: "./folder/other.js"},
-      {name: "./package.json", registeredExport: './package.json', path: "./package.json"},
-      {name: "./source.js", registeredExport: './*.js', path: "./source.js"},
+      {name: ".", registeredName: '.', path: "./source.js", registeredPath: "./source.js"},
+      {name: "./file.js", registeredName: './*.js', path: "./file.js", registeredPath: "./*.js"},
+      {name: "./folder/file.js", registeredName: './*.js', path: "./folder/file.js", registeredPath: "./*.js"},
+      {name: "./folder/other.js", registeredName: './*.js', path: "./folder/other.js", registeredPath: "./*.js"},
+      {name: "./package.json", registeredName: './package.json', path: "./package.json", registeredPath: "./package.json"},
+      {name: "./source.js", registeredName: './*.js', path: "./source.js", registeredPath: "./*.js"},
     ],
   );
-})
+});
 
 test.run();

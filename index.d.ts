@@ -49,18 +49,27 @@ export interface Export {
   name: string;
 
 	/**
-	 * The export path as configured in the `package.json` file
-	 *
-	 * If the export contains `*`, this property will still contain the `*`. That
-	 * means that if the `*` export matches multiple files, more than one `Export`
-	 * will have the same `registeredExport`.
-	 */
-	registeredExport: string;
-
-	/**
 	 * Path to the exported file, relative to the `location`.
 	 */
   path: string;
+
+	/**
+	 * The export name as configured in the `package.json` file
+	 *
+	 * If the export contains `*`, this property will still contain the `*`. That
+	 * means that if the `*` export matches multiple files, more than one `Export`
+	 * will have the same `registeredName`.
+	 */
+	registeredName: string;
+
+  /**
+   * The export path as configured in the `package.json` file
+   *
+   * If the export contains `*`, this property will still contain the `*`. That
+   * means that if the `*` export matches multiple files, more than one `Export`
+   * will have the same `registeredPath`.
+   */
+  registeredPath: string;
 }
 
 /**
