@@ -1,4 +1,4 @@
-import type {Export, ExportInput} from './index.js';
+import type {Export, ExportInput} from "./index.js";
 
 export type {Export, ExportInput};
 
@@ -14,6 +14,6 @@ export type {Export, ExportInput};
  * @param input Configuration
  */
 export function listExports(
-  location: string,
-  input?: ExportInput,
+	location: string,
+	input?: ExportInput
 ): Promise<Array<Export>>;

@@ -6,11 +6,11 @@
  * @returns {Promise<Array<import('./index.js').Export>>}
  */
 exports.listExports = async function (
-  location,
-  {type = "require", ...rest} = {},
+	location,
+	{type = "require", ...rest} = {}
 ) {
-  return (await import("./index.js")).listExports(location, {
-    type,
-    ...rest,
-  });
+	return (await import("./index.js")).listExports(location, {
+		type,
+		...rest,
+	});
 };

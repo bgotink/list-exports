@@ -1,42 +1,42 @@
 {
-  "name": "@bgotink/list-exports",
-  "version": "0.2.0",
-  "type": "module",
+	"name": "@bgotink/list-exports",
+	"version": "0.2.0",
+	"type": "module",
 	"private": true,
-  "license": "MIT",
-  "author": "Bram Gotink <bram@gotink.me>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bgotink/list-exports.git"
-  },
-  "files": [
-    "*.md",
-    "index.cjs",
-    "index.js",
-    "index.d.cts",
-    "index.d.ts"
-  ],
-  "scripts": {
+	"license": "MIT",
+	"author": "Bram Gotink <bram@gotink.me>",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bgotink/list-exports.git"
+	},
+	"files": [
+		"*.md",
+		"index.cjs",
+		"index.js",
+		"index.d.cts",
+		"index.d.ts"
+	],
+	"scripts": {
 		"build": "scripts/build.sh",
-    "test": "uvu test --ignore fixture"
-  },
-  "exports": {
-    ".": {
-      "require": {
-        "types": "./index.d.cts",
-        "default": "./index.cjs"
-      },
-      "types": "./index.d.ts",
-      "default": "./index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "packageManager": "yarn@4.0.2",
-  "dependencies": {
-    "glob": "^10.3.10"
-  },
-  "devDependencies": {
-    "esbuild-wasm": "^0.20.0",
-    "uvu": "^0.5.6"
-  }
+		"test": "uvu test --ignore fixture"
+	},
+	"exports": {
+		".": {
+			"require": {
+				"types": "./index.d.cts",
+				"default": "./index.cjs"
+			},
+			"types": "./index.d.ts",
+			"default": "./index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"packageManager": "yarn@4.0.2",
+	"dependencies": {
+		"glob": "^10.3.10"
+	},
+	"devDependencies": {
+		"esbuild-wasm": "^0.20.0",
+		"uvu": "^0.5.6"
+	}
 }

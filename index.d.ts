@@ -8,7 +8,7 @@ export interface ExportInput {
 	 * If this object isn't passed, the `location` file will be read and used
 	 * instead.
 	 */
-  packageJson?: unknown;
+	packageJson?: unknown;
 
 	/**
 	 * Enable/disable export conditions related to import type
@@ -21,7 +21,7 @@ export interface ExportInput {
 	 * If no value is passed, the value will default to "import" if this package
 	 * is imported, and "require" if this package is required.
 	 */
-  type?: "import" | "require" | "default" | null;
+	type?: "import" | "require" | "default" | null;
 
 	/**
 	 * Environment key to support while resolving
@@ -29,12 +29,12 @@ export interface ExportInput {
 	 * Defaults to "node" if not passed, set to null to not support any
 	 * environment-based export condition.
 	 */
-  environment?: "node" | "browser" | null;
+	environment?: "node" | "browser" | null;
 
 	/**
 	 * Extra conditions to support
 	 */
-  extraConditions?: Iterable<string>;
+	extraConditions?: Iterable<string>;
 }
 
 export interface Export {
@@ -46,12 +46,12 @@ export interface Export {
 	 *
 	 * The name of the main export is `'.'`, not `''`.
 	 */
-  name: string;
+	name: string;
 
 	/**
 	 * Path to the exported file, relative to the `location`.
 	 */
-  path: string;
+	path: string;
 
 	/**
 	 * The export name as configured in the `package.json` file
@@ -62,14 +62,14 @@ export interface Export {
 	 */
 	registeredName: string;
 
-  /**
-   * The export path as configured in the `package.json` file
-   *
-   * If the export contains `*`, this property will still contain the `*`. That
-   * means that if the `*` export matches multiple files, more than one `Export`
-   * will have the same `registeredPath`.
-   */
-  registeredPath: string;
+	/**
+	 * The export path as configured in the `package.json` file
+	 *
+	 * If the export contains `*`, this property will still contain the `*`. That
+	 * means that if the `*` export matches multiple files, more than one `Export`
+	 * will have the same `registeredPath`.
+	 */
+	registeredPath: string;
 }
 
 /**
@@ -84,6 +84,6 @@ export interface Export {
  * @param input Configuration
  */
 export function listExports(
-  location: string,
-  input?: ExportInput,
+	location: string,
+	input?: ExportInput
 ): Promise<Array<Export>>;
