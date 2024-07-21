@@ -1,14 +1,16 @@
 # `@bgotink/list-exports`
 
-This package exposes a single `listExports` function that can be used to list a package's exports.
+This package exposes functions that can be used to list a package's exports and imports.
 
-The function expects one or two parameters:
+## `listExports`
+
+The `listExports` function expects one or two parameters:
 
 ```ts
 export function listExports(
 	location: string | URL,
-	input?: ExportInput
-): Promise<Array<Export>>;
+	input?: ImportExportInput
+): Promise<Array<ImportExport>>;
 ```
 
 - `location` is the path or full file URL to the `package.json` file
@@ -18,7 +20,7 @@ export function listExports(
   - `type` (`import` | `require` | `default` | null, default: `import` when the package is imported and `require` when the package is required) Module type condition to load. The `default` condition is added unless the value `null` is passed.
   - `extraCondition` (`string[]`, default: `[]`) Extra conditions to allow
 
-The returned `Export` objects have four properties:
+The returned `ImportExport` objects have four properties:
 
 - `name` is the export path as used to import the export.
   If the name is `'./deep/export'` and the package is named `pkg`, the export can be imported as `pkg/deep/export`.
@@ -26,10 +28,21 @@ The returned `Export` objects have four properties:
 - `path` is the path to the exported file, relative to the `location`.
 - `registeredName` is the export name as configured in the `package.json` file.
 	If the export contains `*`, this property will still contain the `*`.
-	That means that if the `*` export matches multiple files, more than one `Export` will have the same `registeredName`.
+	That means that if the `*` export matches multiple files, more than one `ImportExport` will have the same `registeredName`.
 - `registeredPath` is the export path as configured in the `package.json` file.
 	If the export contains `*`, this property will still contain the `*`.
-	That means that if the `*` export matches multiple files, more than one `Export` will have the same `registeredPath`.
+	That means that if the `*` export matches multiple files, more than one `ImportExport` will have the same `registeredPath`.
+
+## `listImports`
+
+The `listImports` function is identical to `listExports`, except it lists the package's `imports` rather than `exports`.
+
+```ts
+export function listImports(
+	location: string | URL,
+	input?: ImportExportInput
+): Promise<Array<ImportExport>>;
+```
 
 ## License & Notice
 

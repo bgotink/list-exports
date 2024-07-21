@@ -1,7 +1,7 @@
 /**
- * Input for the `listExports` function
+ * Input for the `listExports` and `listImports` functions
  */
-export interface ExportInput {
+export interface ImportExportInput {
 	/**
 	 * `package.json` object
 	 *
@@ -37,7 +37,12 @@ export interface ExportInput {
 	extraConditions?: Iterable<string>;
 }
 
-export interface Export {
+/**
+ * @deprecated Renamed to {@link ImportExportInput}
+ */
+export type ExportInput = ImportExportInput;
+
+export interface ImportExport {
 	/**
 	 * The export path as used to import the export
 	 *
@@ -73,6 +78,11 @@ export interface Export {
 }
 
 /**
+ * @deprecated Renamed to {@link ImportExport}
+ */
+export type Export = ImportExport;
+
+/**
  * List the exports in the package at the given location
  *
  * If the `package.json` doesn't exist, you can pass in a `package.json` object
@@ -85,5 +95,21 @@ export interface Export {
  */
 export function listExports(
 	location: string,
-	input?: ExportInput
-): Promise<Array<Export>>;
+	input?: ImportExportInput
+): Promise<Array<ImportExport>>;
+
+/**
+ * List the imports in the package at the given location
+ *
+ * If the `package.json` doesn't exist, you can pass in a `package.json` object
+ * in the `input`'s `packageJson` property.
+ *
+ * This function defaults the `type` of the `input` to `"import"`.
+ *
+ * @param location Path to the `package.json` in which to locate imports
+ * @param input Configuration
+ */
+export function listImports(
+	location: string,
+	input?: ImportExportInput
+): Promise<Array<ImportExport>>;

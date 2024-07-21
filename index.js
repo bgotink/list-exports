@@ -1,15 +1,14 @@
 // @ts-check
 
 import {readFile} from "node:fs/promises";
-import {dirname} from "node:path";
 
 import {globStream} from "glob";
-import { pathToFileURL } from "node:url";
+import {pathToFileURL} from "node:url";
 
 /**
  * @param {string | URL} location
- * @param {import('./index.js').ExportInput} [input]
- * @returns {Promise<Array<import('./index.js').Export>>}
+ * @param {import('./index.js').ImportExportInput} [input]
+ * @returns {Promise<Array<import('./index.js').ImportExport>>}
  */
 export async function listExports(
 	location,
@@ -20,44 +19,136 @@ export async function listExports(
 		extraConditions = [],
 	} = {}
 ) {
-	if (typeof location === 'string') {
+	if (typeof location === "string") {
 		location = pathToFileURL(location);
 	}
 
-	if (packageJson === undefined) {
-		packageJson = JSON.parse(await readFile(location, "utf-8"));
-	}
+	packageJson = await readPackageJson(location, packageJson);
 
-	if (packageJson == null || typeof packageJson !== "object") {
-		return [];
-	}
+	const conditions = getConditions(type, environment, extraConditions);
 
-	const conditions = new Set(extraConditions);
-	if (type != null) {
-		conditions.add(type);
-		conditions.add("default");
-	}
-	if (environment != null) {
-		conditions.add(environment);
-	}
+	const entries = getExportsEntries(
+		/** @type {any} */ (packageJson).exports,
+		false
+	);
 
-	const entries = getExportsEntries(/** @type {any} */ (packageJson).exports);
 	if (entries.length === 0) {
 		return [];
 	}
 
-	if (entries.every(([, key]) => !key.includes("*"))) {
-		return listExportsWithoutPatterns(entries, conditions);
-	} else {
+	if (entries.some(hasPatternInEntry)) {
 		return await listExportsWithPatterns(location, entries, conditions);
+	} else {
+		return listExportsWithoutPatterns(entries, conditions);
+	}
+}
+
+
+/**
+ * @param {string | URL} location
+ * @param {import('./index.js').ImportExportInput} [input]
+ * @returns {Promise<Array<import('./index.js').ImportExport>>}
+ */
+export async function listImports(
+	location,
+	{
+		type = "import",
+		packageJson,
+		environment = "node",
+		extraConditions = [],
+	} = {}
+) {
+	if (typeof location === "string") {
+		location = pathToFileURL(location);
+	}
+
+	packageJson = await readPackageJson(location, packageJson);
+
+	const conditions = getConditions(type, environment, extraConditions);
+
+	const entries = getExportsEntries(
+		/** @type {any} */ (packageJson).imports,
+		true
+	);
+
+	if (entries.length === 0) {
+		return [];
+	}
+
+	if (entries.some(hasPatternInEntry)) {
+		return await listExportsWithPatterns(location, entries, conditions);
+	} else {
+		return listExportsWithoutPatterns(entries, conditions);
 	}
 }
 
 /**
+ * @param {readonly [unknown, string, ...unknown[]]} entry
+ */
+function hasPatternInEntry([, key]) {
+	return key.includes("*");
+}
+
+/**
+ *
+ * @param {URL} location
+ * @param {unknown} packageJson
+ * @returns {Promise<unknown>}
+ */
+async function readPackageJson(location, packageJson) {
+	let hasReadLocation = false;
+
+	if (packageJson === undefined) {
+		packageJson = JSON.parse(await readFile(location, "utf-8"));
+		hasReadLocation = true;
+	}
+
+	if (
+		packageJson == null ||
+		typeof packageJson !== "object" ||
+		Array.isArray(packageJson)
+	) {
+		if (hasReadLocation) {
+			throw new Error(
+				`Invalid package.json at ${location}, expected the file to contain an object`
+			);
+		} else {
+			throw new Error(
+				`Invalid value for the packageJson option, expected an object`
+			);
+		}
+	}
+
+	return packageJson;
+}
+
+/**
+ *
+ * @param {import('./index.js').ExportInput['type'] & string | null} type
+ * @param {import('./index.js').ExportInput['environment'] & string | null} environment
+ * @param {import('./index.js').ExportInput['extraConditions']} extraConditions
+ */
+function getConditions(type, environment, extraConditions) {
+	const conditions = new Set(extraConditions);
+
+	if (type != null) {
+		conditions.add(type);
+		conditions.add("default");
+	}
+
+	if (environment != null) {
+		conditions.add(environment);
+	}
+
+	return conditions;
+}
+
+/**
  * @param {any} exports
+ * @param {boolean} isImports
  * @returns {Array<[string, string, any]>}
  */
-function getExportsEntries(exports) {
+function getExportsEntries(exports, isImports) {
 	if (exports == null) {
 		return [];
 	}
@@ -67,6 +158,10 @@ function getExportsEntries(exports) {
 		exports === null ||
 		Array.isArray(exports)
 	) {
+		if (isImports) {
+			throw new Error("Malformed imports value, expected an object");
+		}
+
 		return [[".", ".", exports]];
 	}
 
@@ -75,15 +170,28 @@ function getExportsEntries(exports) {
 		return [];
 	}
 
-	const startsWithDot = entries[0][0] === "." || entries[0][0].startsWith("./");
-	for (const [key] of entries.slice(1)) {
-		if (startsWithDot !== (key === "." || key.startsWith("./"))) {
-			throw new Error("Malformed exports object, only some keys start with ./");
+	if (!isImports) {
+		const startsWithDot =
+			entries[0][0] === "." || entries[0][0].startsWith("./");
+		for (const [key] of entries.slice(1)) {
+			if (startsWithDot !== (key === "." || key.startsWith("./"))) {
+				throw new Error(
+					"Malformed exports object, only some keys start with ./"
+				);
+			}
 		}
-	}
 
-	if (!startsWithDot) {
-		return [[".", ".", exports]];
+		if (!startsWithDot) {
+			return [[".", ".", exports]];
+		}
+	} else {
+		for (const [key] of entries.slice(1)) {
+			if (!key.startsWith("#")) {
+				throw new Error(
+					"Malformed imports object, some keys don't start with #"
+				);
+			}
+		}
 	}
 
 	return entries.map(([key, e]) =>
@@ -199,7 +307,7 @@ async function listExportsWithPatterns(location, exports, conditions) {
 			}
 
 			for await (const path of globStream(patterns, {
-				cwd: new URL('.', location),
+				cwd: new URL(".", location),
 				posix: true,
 				dot: true,
 				dotRelative: true,
