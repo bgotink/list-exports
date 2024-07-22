@@ -14,7 +14,7 @@ cp index.d.ts index.d.cts index.cjs dist/
 
 cp *.md dist/
 
-jq "del(.scripts) | del(.devDependencies) | del(.private) | del(.packageManager)" <package.json > dist/package.json
+jq "del(.scripts) | del(.devDependencies) | del(.dependencies) | del(.private) | del(.packageManager)" <package.json > dist/package.json
 
 cat <<EOF >dist/NOTICE.md
 # Copyright notice
