@@ -9,7 +9,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bgotink/list-exports@workspace:."
   dependencies:
-    esbuild-wasm: "npm:^0.20.0"
+    esbuild-wasm: "npm:^0.23.0"
     glob: "npm:^10.3.10"
     uvu: "npm:^0.5.6"
   languageName: unknown
@@ -144,12 +144,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild-wasm@npm:^0.20.0":
-  version: 0.20.0
-  resolution: "esbuild-wasm@npm:0.20.0"
+"esbuild-wasm@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "esbuild-wasm@npm:0.23.0"
   bin:
     esbuild: bin/esbuild
-  checksum: 32dd516c971f50c28c9d637a1f4b7060f79922e2899cdcbf7dc77e5e01acaa7f6f11923f9c992bca510a3f0bda5df266e8c92ae3a7c259e156192ab7661e4fca
+  checksum: 027a5d8db3b9a39523d68885de9e02f82ec0a0174668fa184b1bc7af4c1e17ed07180d9ceccc714ec8d5d8b7d43faf3f81e8c675b4921fa5262b1e1aa876f457
   languageName: node
   linkType: hard
 

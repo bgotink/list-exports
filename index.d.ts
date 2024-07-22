@@ -28,8 +28,10 @@ export interface ImportExportInput {
 	 *
 	 * Defaults to "node" if not passed, set to null to not support any
 	 * environment-based export condition.
+	 *
+	 * The list of options is not enforced via the typescript interface, check the [WinterCG's Runtime Keys](https://runtime-keys.proposal.wintercg.org/) for an overview of useful values to use here
 	 */
-	environment?: "node" | "browser" | null;
+	environment?: "node" | string | null;
 
 	/**
 	 * Extra conditions to support

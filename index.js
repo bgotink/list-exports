@@ -16,7 +16,7 @@ export async function listExports(
 		type = "import",
 		packageJson,
 		environment = "node",
-		extraConditions = [],
+		extraConditions,
 	} = {}
 ) {
 	if (typeof location === "string") {
@@ -55,7 +55,7 @@ export async function listImports(
 		type = "import",
 		packageJson,
 		environment = "node",
-		extraConditions = [],
+		extraConditions,
 	} = {}
 ) {
 	if (typeof location === "string") {
@@ -124,9 +124,9 @@ async function readPackageJson(location, packageJson) {
 
 /**
  *
- * @param {import('./index.js').ExportInput['type'] & string | null} type
- * @param {import('./index.js').ExportInput['environment'] & string | null} environment
- * @param {import('./index.js').ExportInput['extraConditions']} extraConditions
+ * @param {import('./index.js').ImportExportInput['type'] & string | null} type
+ * @param {import('./index.js').ImportExportInput['environment'] & string | null} environment
+ * @param {import('./index.js').ImportExportInput['extraConditions']} extraConditions
  */
 function getConditions(type, environment, extraConditions) {
 	const conditions = new Set(extraConditions);
